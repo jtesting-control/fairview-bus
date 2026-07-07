@@ -30,6 +30,7 @@
         .nr948-bg { color: #00796b; background: #e0f2f1; border: 1px solid #b2dfdb; }
         
         .next-bus { font-size: 13px; color: #333; background: #f1f3f5; padding: 8px; border-radius: 8px; }
+        .notice { font-size: 11px; color: #dc3545; font-weight: bold; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -40,6 +41,7 @@
         <div id="current-day-type" class="day-badge">偵測時間中...</div>
     </div>
 
+    <!-- ==================== 第一部分：出發 ➜ 離開錦綉 ==================== -->
     <div class="section-title">🚌 出發 ➜ 離開錦綉花園</div>
     <div class="grid-container">
         <div class="card"><h2 class="nr93-t">NR93：錦綉花園 ➜ 元朗安信街</h2><div class="route-sub" id="nr93_out-sub">--</div><div class="timer nr93-bg" id="nr93_out-countdown">載入中...</div><div class="next-bus" id="nr93_out-next">下一班：--:--</div></div>
@@ -51,10 +53,11 @@
         <div class="card"><h2 class="nr948-t">NR948：錦綉花園 ➜ 青衣機鐵站</h2><div class="route-sub" id="nr948_out-sub">--</div><div class="timer nr948-bg" id="nr948_out-countdown">載入中...</div><div class="next-bus" id="nr948_out-next">下一班：--:--</div></div>
     </div>
 
+    <!-- ==================== 第二部分：回程 ➜ 返錦綉 ==================== -->
     <div class="section-title">🏡 回程 ➜ 返回錦綉花園</div>
     <div class="grid-container">
-        <div class="card"><h2 class="nr93-t">NR93：元朗安信街 ➜ 錦綉花園</h2><div class="route-sub" id="nr93_in-sub">--</div><div class="timer nr93-bg" id="nr93_in-countdown">載入中...</div><div class="next-bus" id="nr93_in-next">下一班：--:--</div></div>
-        <div class="card"><h2 class="nr93a-t">NR93A：元朗 YOHO MALL ➜ 錦綉花園</h2><div class="route-sub" id="nr93a_in-sub">--</div><div class="timer nr93a-bg" id="nr93a_in-countdown">載入中...</div><div class="next-bus" id="nr93a_in-next">下一班：--:--</div></div>
+        <div class="card"><h2 class="nr93-t">NR93：元朗安信街 ➜ 錦綉花園</h2><div class="route-sub" id="nr93_in-sub">--</div><div class="timer nr93-bg" id="nr93_in-countdown">載入中...</div><div class="next-bus" id="nr93_in-next">下一班：--:--</div><div class="notice">💡 班次由安信街開出，約 3-5 分鐘抵達 YOHO</div></div>
+        <div class="card"><h2 class="nr93a-t">NR93A：元朗 YOHO MALL ➜ 錦綉花園</h2><div class="route-sub" id="nr93a_in-sub">--</div><div class="timer nr93a-bg" id="nr93a_in-countdown">載入中...</div><div class="next-bus" id="nr93a_in-next">下一班：--:--</div><div class="notice">💡 智慧推算：按錦綉開出後約 12 分鐘抵達 YOHO 上客</div></div>
         <div class="card"><h2 class="nr94-t">NR94：上水開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr94_in-sub">--</div><div class="timer nr94-bg" id="nr94_in-countdown">載入中...</div><div class="next-bus" id="nr94_in-next">下一班：--:--</div></div>
         <div class="card"><h2 class="nr92-t">NR92：荃灣開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr92_in-sub">--</div><div class="timer nr92-bg" id="nr92_in-countdown">載入中...</div><div class="next-bus" id="nr92_in-next">下一班：--:--</div></div>
         <div class="card"><h2 class="nr91-t">NR91：港島開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr91_in-sub">--</div><div class="timer nr91-bg" id="nr91_in-countdown">載入中...</div><div class="next-bus" id="nr91_in-next">下一班：--:--</div></div>
@@ -79,31 +82,44 @@
             return res;
         }
 
-        // 🛠️ 根據你的截圖，完美輸入官方完整班次數據
+        // 幫忙把去程時間自動推算 +12 分鐘變成回程時間的工具
+        function calcReturnTimes(outboundTimes, offsetMins = 12) {
+            return outboundTimes.map(time => {
+                let [h, m] = time.split(':').map(Number);
+                let totalMins = h * 60 + m + offsetMins;
+                let newH = Math.floor(totalMins / 60) % 24;
+                let newM = totalMins % 60;
+                return `${newH.toString().padStart(2,'0')}:${newM.toString().padStart(2,'0')}`;
+            });
+        }
+
+        // 🛠️ 根據截圖建立基礎班次
+        const weekday_out_93a = [...genTimes("06:55","10:05",10), ...genTimes("16:05","19:25",8)];
+        const sat_out_93a = [...genTimes("07:55","09:55",15), ...genTimes("17:05","19:35",10)];
+        const sun_out_93a = [...genTimes("07:55","09:55",15), ...genTimes("17:05","19:35",10)];
+
         const officialSchedules = {
-            // ==== 星期一至五 (Weekday) ====
             weekday: {
                 nr93_out: [...genTimes("05:50","10:00",10), ...genTimes("10:00","16:00",8), ...genTimes("16:00","21:20",8), ...genTimes("21:20","22:30",10), ...genTimes("22:30","23:59",15), "00:15"],
                 nr93_in: [...genTimes("06:10","10:30",10), ...genTimes("10:30","16:30",8), ...genTimes("16:30","21:50",8), ...genTimes("21:50","23:00",10), ...genTimes("23:00","23:59",15), "00:15", "00:30", "00:45"],
-                nr93a_out: [...genTimes("06:55","10:05",10), ...genTimes("16:05","19:25",8)],
-                nr93a_in: [], // 官方圖NR93A未註明獨立YOHO開出時間，可能與回程共用或直達，暫按去程倒數
+                nr93a_out: weekday_out_93a,
+                nr93a_in: calcReturnTimes(weekday_out_93a, 12), // 💡 智慧修正：去程加12分鐘變成 YOHO 回程
                 nr94_out: [...genTimes("06:05","08:50",15), ...genTimes("08:50","20:50",20), ...genTimes("20:50","23:20",30)],
                 nr94_in: [...genTimes("06:25","09:10",15), ...genTimes("09:10","21:10",20), ...genTimes("21:10","23:40",30)],
                 nr92_out: ["07:13", "08:00"],
-                nr92_in: ["18:30", "19:00"], // 圓墩圍時間 (港鐵站加5分鐘)
-                nr91_out: [...genTimes("07:00","07:20",10), ...genTimes("07:20","07:40",7), ...genTimes("07:40","07:50",2)], // 精確化班次拆解
-                nr91_in: ["17:35", "17:55", "18:10", "18:20", "18:30", "18:40", "18:55", "19:15", "19:30"], // 告士打道
+                nr92_in: ["18:30", "19:00"], 
+                nr91_out: [...genTimes("07:00","07:20",10), ...genTimes("07:20","07:40",7), ...genTimes("07:40","07:50",2)], 
+                nr91_in: ["17:35", "17:55", "18:10", "18:20", "18:30", "18:40", "18:55", "19:15", "19:30"], 
                 nr936_out: ["07:15", "07:25", "07:30"],
                 nr936_in: ["18:15"],
                 nr948_out: ["08:00"],
                 nr948_in: ["18:45"]
             },
-            // ==== 星期六 (Saturday) ====
             saturday: {
                 nr93_out: [...genTimes("05:50","08:00",10), ...genTimes("08:00","10:00",8), ...genTimes("10:00","17:00",6), ...genTimes("17:00","20:30",8), ...genTimes("20:30","22:00",10), ...genTimes("22:00","23:59",15), "00:15"],
                 nr93_in: [...genTimes("06:10","08:30",10), ...genTimes("08:30","10:30",8), ...genTimes("10:30","17:30",6), ...genTimes("17:30","21:00",8), ...genTimes("21:00","22:30",10), ...genTimes("22:30","23:59",15), "00:15", "00:30", "00:45"],
-                nr93a_out: [...genTimes("07:55","09:55",15), ...genTimes("17:05","19:35",10)],
-                nr93a_in: [],
+                nr93a_out: sat_out_93a,
+                nr93a_in: calcReturnTimes(sat_out_93a, 12), // 💡 智慧修正：去程加12分鐘變成 YOHO 回程
                 nr94_out: [...genTimes("06:05","08:50",15), ...genTimes("08:50","20:50",20), ...genTimes("20:50","23:20",30)],
                 nr94_in: [...genTimes("06:25","09:10",15), ...genTimes("09:10","21:10",20), ...genTimes("21:10","23:40",30)],
                 nr92_out: ["08:00"],
@@ -115,12 +131,11 @@
                 nr948_out: [],
                 nr948_in: []
             },
-            // ==== 星期日及公眾假期 (Sunday/Holiday) ====
             sunday: {
                 nr93_out: [...genTimes("05:50","08:00",10), ...genTimes("08:00","10:00",8), ...genTimes("10:00","17:00",6), ...genTimes("17:00","20:30",8), ...genTimes("20:30","22:00",10), ...genTimes("22:00","23:59",15), "00:15"],
                 nr93_in: [...genTimes("06:10","08:30",10), ...genTimes("08:30","10:30",8), ...genTimes("10:30","17:30",6), ...genTimes("17:30","21:00",8), ...genTimes("21:00","22:30",10), ...genTimes("22:30","23:59",15), "00:15", "00:30", "00:45"],
-                nr93a_out: [...genTimes("07:55","09:55",15), ...genTimes("17:05","19:35",10)],
-                nr93a_in: [],
+                nr93a_out: sun_out_93a,
+                nr93a_in: calcReturnTimes(sun_out_93a, 12), // 💡 智慧修正：去程加12分鐘變成 YOHO 回程
                 nr94_out: [...genTimes("06:05","08:50",15), ...genTimes("08:50","20:50",20), ...genTimes("20:50","23:20",30)],
                 nr94_in: [...genTimes("06:25","09:10",15), ...genTimes("09:10","21:10",20), ...genTimes("21:10","23:40",30)],
                 nr92_out: [],
@@ -135,7 +150,7 @@
         };
 
         function getDayType(now) {
-            let day = now.getDay(); // 0 是星期日，6 是星期六
+            let day = now.getDay();
             if (day === 0) return 'sunday';
             if (day === 6) return 'saturday';
             return 'weekday';
@@ -164,7 +179,6 @@
             const now = new Date();
             const dayType = getDayType(now);
             
-            // 更新頂部星期幾狀態欄
             const dayLabels = { weekday: "📅 今日：星期一至五 (公眾假期除外)", saturday: "📅 今日：星期六 (公眾假期除外)", sunday: "☀️ 今日：星期日及公眾假期" };
             document.getElementById('current-day-type').innerText = dayLabels[dayType];
 
@@ -176,7 +190,6 @@
                 const nextEl = document.getElementById(`${route}-next`);
                 const subEl = document.getElementById(`${route}-sub`);
 
-                // 顯示基礎班次資訊
                 if(subEl) {
                     if (route.startsWith('nr93_')) subEl.innerText = dayType === 'weekday' ? "密：8-10分鐘班" : "極密：6-8分鐘班";
                     else if (route.startsWith('nr93a_')) subEl.innerText = dayType === 'weekday' ? "繁忙時間：8-10分鐘班" : "假日班次：10-15分鐘班";
