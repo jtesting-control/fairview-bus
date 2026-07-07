@@ -13,14 +13,15 @@
         h2 { font-size: 18px; margin: 0 0 5px 0; }
         
         /* 路線顏色標籤 */
-        .nr93-t { color: #0056b3; } .nr94-t { color: #28a745; } .nr92-t { color: #fd7e14; }
-        .nr91-t { color: #6f42c1; } .nr936-t { color: #e83e8c; } .nr948-t { color: #20c997; }
+        .nr93-t { color: #0056b3; } .nr93y-t { color: #17a2b8; } .nr94-t { color: #28a745; } 
+        .nr92-t { color: #fd7e14; } .nr91-t { color: #6f42c1; } .nr936-t { color: #e83e8c; } .nr948-t { color: #20c997; }
         
         .route-sub { color: #666; font-size: 12px; margin-bottom: 12px; }
         .timer { font-size: 2rem; font-weight: bold; margin: 12px 0; padding: 10px; border-radius: 8px; text-align: center; }
         
         /* 倒數箱背景 */
         .nr93-bg { color: #d9383a; background: #fff5f5; border: 1px solid #ffe3e3; }
+        .nr93y-bg { color: #0c5460; background: #e0f7fa; border: 1px solid #bee5eb; }
         .nr94-bg { color: #155724; background: #d4edda; border: 1px solid #c3e6cb; }
         .nr92-bg { color: #d96a06; background: #fff8f2; border: 1px solid #ffe8d4; }
         .nr91-bg { color: #512da8; background: #f3e5f5; border: 1px solid #e1bee7; }
@@ -41,9 +42,15 @@
     <div class="grid-container">
         <div class="card">
             <h2 class="nr93-t">NR93：錦綉花園 ➜ 元朗安信街</h2>
-            <div class="route-sub">每日服務</div>
+            <div class="route-sub">每日服務 (經元朗大馬路)</div>
             <div class="timer nr93-bg" id="nr93_out-countdown">載入中...</div>
             <div class="next-bus" id="nr93_out-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr93y-t">NR93：錦綉花園 ➜ 元朗 YOHO MALL</h2>
+            <div class="route-sub">每日服務 (直達元朗形點/元朗站)</div>
+            <div class="timer nr93y-bg" id="nr93y_out-countdown">載入中...</div>
+            <div class="next-bus" id="nr93y_out-next">下一班：--:--</div>
         </div>
         <div class="card">
             <h2 class="nr94-t">NR94：錦綉花園 ➜ 上水站</h2>
@@ -86,6 +93,12 @@
             <div class="next-bus" id="nr93_in-next">下一班：--:--</div>
         </div>
         <div class="card">
+            <h2 class="nr93y-t">NR93：元朗 YOHO MALL ➜ 錦綉花園</h2>
+            <div class="route-sub">每日服務</div>
+            <div class="timer nr93y-bg" id="nr93y_in-countdown">載入中...</div>
+            <div class="next-bus" id="nr93y_in-next">下一班：--:--</div>
+        </div>
+        <div class="card">
             <h2 class="nr94-t">NR94：上水站 ➜ 錦綉花園</h2>
             <div class="route-sub">每日服務</div>
             <div class="timer nr94-bg" id="nr94_in-countdown">載入中...</div>
@@ -118,23 +131,25 @@
     </div>
 
     <script>
-        // 🛠️ 街坊可以在此修改【去程】同【回程】嘅時間表 (24小時制)
+        // 🛠️ 街坊可以在此分別修改「安信街」與「YOHO線」的時間表
         const schedules = {
             // 出發 (Out)
             nr93_out: ["17:00", "17:10", "17:20", "17:30", "17:40", "17:50", "18:00", "18:15", "18:30"],
+            nr93y_out: ["17:05", "17:25", "17:45", "18:05", "18:25"], // YOHO 出發例子
             nr94_out: ["17:00", "17:15", "17:30", "17:45", "18:00", "18:20", "18:40"],
-            nr92_out: ["07:00", "07:30", "08:00", "08:30"], // 荃灣線朝早例子
-            nr91_out: ["07:15", "07:30", "07:45", "08:00"], // 中環線通常朝早走
+            nr92_out: ["07:00", "07:30", "08:00", "08:30"],
+            nr91_out: ["07:15", "07:30", "07:45", "08:00"],
             nr936_out: ["07:20", "07:40", "08:00"],
             nr948_out: ["07:25", "07:50"],
 
             // 回程 (In)
             nr93_in: ["17:15", "17:25", "17:35", "17:45", "17:55", "18:05", "18:15", "18:30", "18:45"],
+            nr93y_in: ["17:20", "17:40", "18:00", "18:20", "18:40"], // YOHO 返錦綉例子
             nr94_in: ["17:20", "17:35", "17:50", "18:05", "18:20", "18:40", "19:00"],
-            nr92_in: ["17:45", "18:15", "18:45", "19:15", "19:45"], // 荃灣回程黃昏熱門
-            nr91_in: ["17:30", "18:00", "18:30", "19:00"],         // 中環放工返屋苑
-            nr936_in: ["17:45", "18:15", "18:45"],                 // 紅磡返屋苑
-            nr948_in: ["17:40", "18:10", "18:40"]                  // 青衣返屋苑
+            nr92_in: ["17:45", "18:15", "18:45", "19:15", "19:45"],
+            nr91_in: ["17:30", "18:00", "18:30", "19:00"],
+            nr936_in: ["17:45", "18:15", "18:45"],
+            nr948_in: ["17:40", "18:10", "18:40"]
         };
 
         function getEta(schedule) {
