@@ -41,7 +41,6 @@
         <div id="current-day-type" class="day-badge">偵測時間中...</div>
     </div>
 
-    <!-- ==================== 第一部分：出發 ➜ 離開錦綉 ==================== -->
     <div class="section-title">🚌 出發 ➜ 離開錦綉花園</div>
     <div class="grid-container">
         <div class="card"><h2 class="nr93-t">NR93：錦綉花園 ➜ 元朗安信街</h2><div class="route-sub" id="nr93_out-sub">--</div><div class="timer nr93-bg" id="nr93_out-countdown">載入中...</div><div class="next-bus" id="nr93_out-next">下一班：--:--</div></div>
@@ -53,7 +52,6 @@
         <div class="card"><h2 class="nr948-t">NR948：錦綉花園 ➜ 青衣機鐵站</h2><div class="route-sub" id="nr948_out-sub">--</div><div class="timer nr948-bg" id="nr948_out-countdown">載入中...</div><div class="next-bus" id="nr948_out-next">下一班：--:--</div></div>
     </div>
 
-    <!-- ==================== 第二部分：回程 ➜ 返錦綉 ==================== -->
     <div class="section-title">🏡 回程 ➜ 返回錦綉花園</div>
     <div class="grid-container">
         <div class="card"><h2 class="nr93-t">NR93：元朗安信街 ➜ 錦綉花園</h2><div class="route-sub" id="nr93_in-sub">--</div><div class="timer nr93-bg" id="nr93_in-countdown">載入中...</div><div class="next-bus" id="nr93_in-next">下一班：--:--</div><div class="notice">💡 班次由安信街開出，約 3-5 分鐘抵達 YOHO</div></div>
@@ -61,12 +59,13 @@
         <div class="card"><h2 class="nr94-t">NR94：上水開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr94_in-sub">--</div><div class="timer nr94-bg" id="nr94_in-countdown">載入中...</div><div class="next-bus" id="nr94_in-next">下一班：--:--</div></div>
         <div class="card"><h2 class="nr92-t">NR92：荃灣開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr92_in-sub">--</div><div class="timer nr92-bg" id="nr92_in-countdown">載入中...</div><div class="next-bus" id="nr92_in-next">下一班：--:--</div></div>
         <div class="card"><h2 class="nr91-t">NR91：港島開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr91_in-sub">--</div><div class="timer nr91-bg" id="nr91_in-countdown">載入中...</div><div class="next-bus" id="nr91_in-next">下一班：--:--</div></div>
-        <div class="card"><h2 class="nr936-t">NR936：港鐵紅磡站 ➜ 錦綉花園</h2><div class="route-sub" id="nr936_in-sub">--</div><div class="timer nr936-bg" id="nr936_in-countdown">載入中...</div><div class="next-bus" id="nr936-in-next">下一班：--:--</div></div>
+        
+        <div class="card"><h2 class="nr936-t">NR936：港鐵紅磡站 ➜ 錦綉花園</h2><div class="route-sub" id="nr936_in-sub">--</div><div class="timer nr936-bg" id="nr936_in-countdown">載入中...</div><div class="next-bus" id="nr936_in-next">下一班：--:--</div></div>
+        
         <div class="card"><h2 class="nr948-t">NR948：青衣機鐵站 ➜ 錦綉花園</h2><div class="route-sub" id="nr948_in-sub">--</div><div class="timer nr948-bg" id="nr948_in-countdown">載入中...</div><div class="next-bus" id="nr948_in-next">下一班：--:--</div></div>
     </div>
 
     <script>
-        // 幫忙將「時間範圍 + 間隔」自動轉化為時間點的工具函數
         function genTimes(start, end, interval) {
             let res = [];
             let [sh, sm] = start.split(':').map(Number);
@@ -82,7 +81,6 @@
             return res;
         }
 
-        // 幫忙把去程時間自動推算 +12 分鐘變成回程時間的工具
         function calcReturnTimes(outboundTimes, offsetMins = 12) {
             return outboundTimes.map(time => {
                 let [h, m] = time.split(':').map(Number);
@@ -93,7 +91,6 @@
             });
         }
 
-        // 🛠️ 根據截圖建立基礎班次
         const weekday_out_93a = [...genTimes("06:55","10:05",10), ...genTimes("16:05","19:25",8)];
         const sat_out_93a = [...genTimes("07:55","09:55",15), ...genTimes("17:05","19:35",10)];
         const sun_out_93a = [...genTimes("07:55","09:55",15), ...genTimes("17:05","19:35",10)];
@@ -103,7 +100,7 @@
                 nr93_out: [...genTimes("05:50","10:00",10), ...genTimes("10:00","16:00",8), ...genTimes("16:00","21:20",8), ...genTimes("21:20","22:30",10), ...genTimes("22:30","23:59",15), "00:15"],
                 nr93_in: [...genTimes("06:10","10:30",10), ...genTimes("10:30","16:30",8), ...genTimes("16:30","21:50",8), ...genTimes("21:50","23:00",10), ...genTimes("23:00","23:59",15), "00:15", "00:30", "00:45"],
                 nr93a_out: weekday_out_93a,
-                nr93a_in: calcReturnTimes(weekday_out_93a, 12), // 💡 智慧修正：去程加12分鐘變成 YOHO 回程
+                nr93a_in: calcReturnTimes(weekday_out_93a, 12),
                 nr94_out: [...genTimes("06:05","08:50",15), ...genTimes("08:50","20:50",20), ...genTimes("20:50","23:20",30)],
                 nr94_in: [...genTimes("06:25","09:10",15), ...genTimes("09:10","21:10",20), ...genTimes("21:10","23:40",30)],
                 nr92_out: ["07:13", "08:00"],
@@ -119,7 +116,7 @@
                 nr93_out: [...genTimes("05:50","08:00",10), ...genTimes("08:00","10:00",8), ...genTimes("10:00","17:00",6), ...genTimes("17:00","20:30",8), ...genTimes("20:30","22:00",10), ...genTimes("22:00","23:59",15), "00:15"],
                 nr93_in: [...genTimes("06:10","08:30",10), ...genTimes("08:30","10:30",8), ...genTimes("10:30","17:30",6), ...genTimes("17:30","21:00",8), ...genTimes("21:00","22:30",10), ...genTimes("22:30","23:59",15), "00:15", "00:30", "00:45"],
                 nr93a_out: sat_out_93a,
-                nr93a_in: calcReturnTimes(sat_out_93a, 12), // 💡 智慧修正：去程加12分鐘變成 YOHO 回程
+                nr93a_in: calcReturnTimes(sat_out_93a, 12),
                 nr94_out: [...genTimes("06:05","08:50",15), ...genTimes("08:50","20:50",20), ...genTimes("20:50","23:20",30)],
                 nr94_in: [...genTimes("06:25","09:10",15), ...genTimes("09:10","21:10",20), ...genTimes("21:10","23:40",30)],
                 nr92_out: ["08:00"],
@@ -135,7 +132,7 @@
                 nr93_out: [...genTimes("05:50","08:00",10), ...genTimes("08:00","10:00",8), ...genTimes("10:00","17:00",6), ...genTimes("17:00","20:30",8), ...genTimes("20:30","22:00",10), ...genTimes("22:00","23:59",15), "00:15"],
                 nr93_in: [...genTimes("06:10","08:30",10), ...genTimes("08:30","10:30",8), ...genTimes("10:30","17:30",6), ...genTimes("17:30","21:00",8), ...genTimes("21:00","22:30",10), ...genTimes("22:30","23:59",15), "00:15", "00:30", "00:45"],
                 nr93a_out: sun_out_93a,
-                nr93a_in: calcReturnTimes(sun_out_93a, 12), // 💡 智慧修正：去程加12分鐘變成 YOHO 回程
+                nr93a_in: calcReturnTimes(sun_out_93a, 12),
                 nr94_out: [...genTimes("06:05","08:50",15), ...genTimes("08:50","20:50",20), ...genTimes("20:50","23:20",30)],
                 nr94_in: [...genTimes("06:25","09:10",15), ...genTimes("09:10","21:10",20), ...genTimes("21:10","23:40",30)],
                 nr92_out: [],
