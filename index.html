@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>錦綉街坊村巴雙向倒數站</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #eef2f7; padding: 10px; margin: 0; }
+        .header { text-align: center; padding: 25px 0 10px 0; color: #333; }
+        .section-title { text-align: center; width: 100%; margin: 30px 0 10px 0; color: #495057; font-size: 22px; border-bottom: 2px solid #dee2e6; padding-bottom: 8px; }
+        .grid-container { max-width: 950px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); width: 100%; max-width: 450px; box-sizing: border-box; }
+        h2 { font-size: 18px; margin: 0 0 5px 0; }
+        
+        /* 路線顏色標籤 */
+        .nr93-t { color: #0056b3; } .nr94-t { color: #28a745; } .nr92-t { color: #fd7e14; }
+        .nr91-t { color: #6f42c1; } .nr936-t { color: #e83e8c; } .nr948-t { color: #20c997; }
+        
+        .route-sub { color: #666; font-size: 12px; margin-bottom: 12px; }
+        .timer { font-size: 2rem; font-weight: bold; margin: 12px 0; padding: 10px; border-radius: 8px; text-align: center; }
+        
+        /* 倒數箱背景 */
+        .nr93-bg { color: #d9383a; background: #fff5f5; border: 1px solid #ffe3e3; }
+        .nr94-bg { color: #155724; background: #d4edda; border: 1px solid #c3e6cb; }
+        .nr92-bg { color: #d96a06; background: #fff8f2; border: 1px solid #ffe8d4; }
+        .nr91-bg { color: #512da8; background: #f3e5f5; border: 1px solid #e1bee7; }
+        .nr936-bg { color: #c2185b; background: #fce4ec; border: 1px solid #f8bbd0; }
+        .nr948-bg { color: #00796b; background: #e0f2f1; border: 1px solid #b2dfdb; }
+        
+        .next-bus { font-size: 13px; color: #333; background: #f1f3f5; padding: 8px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 style="margin:0; font-size: 26px;">錦綉花園村巴雙向倒數計</h1>
+        <p style="margin:5px 0 10px 0; color:#666;">街坊自發固定班次計時器 (去程・回程全線開通)</p>
+    </div>
+
+    <div class="section-title">🚌 出發 ➜ 離開錦綉花園</div>
+    <div class="grid-container">
+        <div class="card">
+            <h2 class="nr93-t">NR93：錦綉花園 ➜ 元朗安信街</h2>
+            <div class="route-sub">每日服務</div>
+            <div class="timer nr93-bg" id="nr93_out-countdown">載入中...</div>
+            <div class="next-bus" id="nr93_out-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr94-t">NR94：錦綉花園 ➜ 上水站</h2>
+            <div class="route-sub">每日服務</div>
+            <div class="timer nr94-bg" id="nr94_out-countdown">載入中...</div>
+            <div class="next-bus" id="nr94_out-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr92-t">NR92：錦綉花園 ➜ 荃灣站</h2>
+            <div class="route-sub">每日服務</div>
+            <div class="timer nr92-bg" id="nr92_out-countdown">載入中...</div>
+            <div class="next-bus" id="nr92_out-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr91-t">NR91：錦綉花園 ➜ 灣仔/中環</h2>
+            <div class="route-sub">平日早上服務</div>
+            <div class="timer nr91-bg" id="nr91_out-countdown">載入中...</div>
+            <div class="next-bus" id="nr91_out-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr936-t">NR936：錦綉花園 ➜ 紅磡車站</h2>
+            <div class="route-sub">平日早上服務</div>
+            <div class="timer nr936-bg" id="nr936-out-countdown">載入中...</div>
+            <div class="next-bus" id="nr936-out-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr948-t">NR948：錦綉花園 ➜ 青衣站</h2>
+            <div class="route-sub">平日早上服務</div>
+            <div class="timer nr948-bg" id="nr948_out-countdown">載入中...</div>
+            <div class="next-bus" id="nr948_out-next">下一班：--:--</div>
+        </div>
+    </div>
+
+    <div class="section-title">🏡 回程 ➜ 返回錦綉花園</div>
+    <div class="grid-container">
+        <div class="card">
+            <h2 class="nr93-t">NR93：元朗安信街 ➜ 錦綉花園</h2>
+            <div class="route-sub">每日服務</div>
+            <div class="timer nr93-bg" id="nr93_in-countdown">載入中...</div>
+            <div class="next-bus" id="nr93_in-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr94-t">NR94：上水站 ➜ 錦綉花園</h2>
+            <div class="route-sub">每日服務</div>
+            <div class="timer nr94-bg" id="nr94_in-countdown">載入中...</div>
+            <div class="next-bus" id="nr94_in-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr92-t">NR92：荃灣站 ➜ 錦綉花園</h2>
+            <div class="route-sub">每日服務</div>
+            <div class="timer nr92-bg" id="nr92_in-countdown">載入中...</div>
+            <div class="next-bus" id="nr92_in-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr91-t">NR91：灣仔/中環 ➜ 錦綉花園</h2>
+            <div class="route-sub">平日傍晚服務</div>
+            <div class="timer nr91-bg" id="nr91_in-countdown">載入中...</div>
+            <div class="next-bus" id="nr91_in-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr936-t">NR936：紅磡車站 ➜ 錦綉花園</h2>
+            <div class="route-sub">平日傍晚服務</div>
+            <div class="timer nr936-bg" id="nr936-in-countdown">載入中...</div>
+            <div class="next-bus" id="nr936-in-next">下一班：--:--</div>
+        </div>
+        <div class="card">
+            <h2 class="nr948-t">NR948：青衣站 ➜ 錦綉花園</h2>
+            <div class="route-sub">平日傍晚服務</div>
+            <div class="timer nr948-bg" id="nr948_in-countdown">載入中...</div>
+            <div class="next-bus" id="nr948_in-next">下一班：--:--</div>
+        </div>
+    </div>
+
+    <script>
+        // 🛠️ 街坊可以在此修改【去程】同【回程】嘅時間表 (24小時制)
+        const schedules = {
+            // 出發 (Out)
+            nr93_out: ["17:00", "17:10", "17:20", "17:30", "17:40", "17:50", "18:00", "18:15", "18:30"],
+            nr94_out: ["17:00", "17:15", "17:30", "17:45", "18:00", "18:20", "18:40"],
+            nr92_out: ["07:00", "07:30", "08:00", "08:30"], // 荃灣線朝早例子
+            nr91_out: ["07:15", "07:30", "07:45", "08:00"], // 中環線通常朝早走
+            nr936_out: ["07:20", "07:40", "08:00"],
+            nr948_out: ["07:25", "07:50"],
+
+            // 回程 (In)
+            nr93_in: ["17:15", "17:25", "17:35", "17:45", "17:55", "18:05", "18:15", "18:30", "18:45"],
+            nr94_in: ["17:20", "17:35", "17:50", "18:05", "18:20", "18:40", "19:00"],
+            nr92_in: ["17:45", "18:15", "18:45", "19:15", "19:45"], // 荃灣回程黃昏熱門
+            nr91_in: ["17:30", "18:00", "18:30", "19:00"],         // 中環放工返屋苑
+            nr936_in: ["17:45", "18:15", "18:45"],                 // 紅磡返屋苑
+            nr948_in: ["17:40", "18:10", "18:40"]                  // 青衣返屋苑
+        };
+
+        function getEta(schedule) {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
+            let nextBus = null;
+            let followingBus = null;
+
+            for (let i = 0; i < schedule.length; i++) {
+                const [h, m] = schedule[i].split(':').map(Number);
+                if (h > currentHour || (h === currentHour && m > currentMin)) {
+                    nextBus = { h, m };
+                    if (i + 1 < schedule.length) followingBus = schedule[i+1];
+                    break;
+                }
+            }
+            return { nextBus, followingBus, now };
+        }
+
+        function updateAll() {
+            Object.keys(schedules).forEach(route => {
+                const info = getEta(schedules[route]);
+                const countdownEl = document.getElementById(`${route}-countdown`);
+                const nextEl = document.getElementById(`${route}-next`);
+
+                if (countdownEl && nextEl) {
+                    if (info.nextBus) {
+                        const busDate = new Date();
+                        busDate.setHours(info.nextBus.h, info.nextBus.m, 0);
+                        const diff = busDate - info.now;
+                        
+                        const mins = Math.floor(diff / 1000 / 60);
+                        const secs = Math.floor((diff / 1000) % 60);
+
+                        countdownEl.innerText = `${mins}分 ${secs}秒`;
+                        nextEl.innerText = `下一班：${info.nextBus.h.toString().padStart(2,'0')}:${info.nextBus.m.toString().padStart(2,'0')} (隨後：${info.followingBus || '尾班車'})`;
+                    } else {
+                        countdownEl.innerText = "班次已完結";
+                        nextEl.innerText = "今日非服務時間或班次已完";
+                    }
+                }
+            });
+        }
+
+        setInterval(updateAll, 1000);
+        updateAll();
+    </script>
+</body>
+</html>
