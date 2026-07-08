@@ -31,6 +31,9 @@
         
         .next-bus { font-size: 13px; color: #333; background: #f1f3f5; padding: 8px; border-radius: 8px; }
         .notice { font-size: 11px; color: #dc3545; font-weight: bold; margin-top: 4px; }
+        
+        /* 休息狀態樣式 */
+        .status-off { color: #6c757d !important; background: #e9ecef !important; border: 1px solid #ced4da !important; font-size: 1.5rem !important; }
     </style>
 </head>
 <body>
@@ -59,9 +62,7 @@
         <div class="card"><h2 class="nr94-t">NR94：上水開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr94_in-sub">--</div><div class="timer nr94-bg" id="nr94_in-countdown">載入中...</div><div class="next-bus" id="nr94_in-next">下一班：--:--</div></div>
         <div class="card"><h2 class="nr92-t">NR92：荃灣開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr92_in-sub">--</div><div class="timer nr92-bg" id="nr92_in-countdown">載入中...</div><div class="next-bus" id="nr92_in-next">下一班：--:--</div></div>
         <div class="card"><h2 class="nr91-t">NR91：港島開出 ➜ 錦綉花園</h2><div class="route-sub" id="nr91_in-sub">--</div><div class="timer nr91-bg" id="nr91_in-countdown">載入中...</div><div class="next-bus" id="nr91_in-next">下一班：--:--</div></div>
-        
         <div class="card"><h2 class="nr936-t">NR936：港鐵紅磡站 ➜ 錦綉花園</h2><div class="route-sub" id="nr936_in-sub">--</div><div class="timer nr936-bg" id="nr936_in-countdown">載入中...</div><div class="next-bus" id="nr936_in-next">下一班：--:--</div></div>
-        
         <div class="card"><h2 class="nr948-t">NR948：青衣機鐵站 ➜ 錦綉花園</h2><div class="route-sub" id="nr948_in-sub">--</div><div class="timer nr948-bg" id="nr948_in-countdown">載入中...</div><div class="next-bus" id="nr948_in-next">下一班：--:--</div></div>
     </div>
 
@@ -189,7 +190,7 @@
 
                 if(subEl) {
                     if (route.startsWith('nr93_')) subEl.innerText = dayType === 'weekday' ? "密：8-10分鐘班" : "極密：6-8分鐘班";
-                    else if (route.startsWith('nr93a_')) subEl.innerText = dayType === 'weekday' ? "繁忙時間：8-10分鐘班" : "假日班次：10-15分鐘班";
+                    else if (route.startsWith('nr93a_')) subEl.innerText = dayType === 'weekday' ? "繁忙時間服務" : "假日班次：10-15分鐘班";
                     else if (route.startsWith('nr94_')) subEl.innerText = "定時班次：15-30分鐘班";
                     else subEl.innerText = "特定班次 (請看下面詳情)";
                 }
@@ -204,11 +205,20 @@
                         const mins = Math.floor(diff / 1000 / 60);
                         const secs = Math.floor((diff / 1000) % 60);
 
-                        countdownEl.innerText = `${mins}分 ${secs}秒`;
-                        nextEl.innerText = `下一班：${info.nextBus.h.toString().padStart(2,'0')}:${info.nextBus.m.toString().padStart(2,'0')} (隨後：${info.followingBus || '尾班車'})`;
+                        // 💡 關鍵修正：如果下一班車要等大過 60 分鐘，代表現時根本唔係服務時段！
+                        if (mins > 60) {
+                            countdownEl.innerText = "非服務時段";
+                            countdownEl.classList.add('status-off');
+                            nextEl.innerText = `下階段服務於 ${info.nextBus.h.toString().padStart(2,'0')}:${info.nextBus.m.toString().padStart(2,'0')} 開始`;
+                        } else {
+                            countdownEl.innerText = `${mins}分 ${secs}秒`;
+                            countdownEl.classList.remove('status-off');
+                            nextEl.innerText = `下一班：${info.nextBus.h.toString().padStart(2,'0')}:${info.nextBus.m.toString().padStart(2,'0')} (隨後：${info.followingBus || '尾班車'})`;
+                        }
                     } else {
                         countdownEl.innerText = "服務已完結";
-                        nextEl.innerText = "今日非服務時間或班次已完";
+                        countdownEl.classList.add('status-off');
+                        nextEl.innerText = "今日班次已全部開出";
                     }
                 }
             });
