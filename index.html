@@ -8,6 +8,14 @@
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #eef2f7; padding: 10px; margin: 0; }
         .header { text-align: center; padding: 20px 0 5px 0; color: #333; }
         .day-badge { background: #007bff; color: white; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+        
+        /* 🗺️ 優化版：實時交通快捷卡樣式 */
+        .traffic-card { max-width: 950px; margin: 10px auto 20px auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); box-sizing: border-box; text-align: center; border-left: 5px solid #28a745; }
+        .traffic-title { font-size: 17px; font-weight: bold; color: #333; margin-top: 0; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .traffic-desc { font-size: 13px; color: #666; margin-bottom: 15px; line-height: 1.5; }
+        .traffic-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: #28a745; color: white; text-decoration: none; padding: 12px 24px; border-radius: 30px; font-weight: bold; font-size: 15px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); transition: all 0.2s ease; }
+        .traffic-btn:hover { background: #218838; transform: translateY(-1px); }
+
         .section-title { text-align: center; width: 100%; margin: 25px 0 10px 0; color: #495057; font-size: 20px; border-bottom: 2px solid #dee2e6; padding-bottom: 8px; font-weight: bold; }
         .grid-container { max-width: 950px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
         .card { background: white; padding: 18px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); width: 100%; max-width: 450px; box-sizing: border-box; }
@@ -44,6 +52,20 @@
         <div id="current-day-type" class="day-badge">偵測時間中...</div>
     </div>
 
+    <!-- ==================== 🛠️ 修正優化部分：一鍵開啟 Google Maps 實時路況 ==================== -->
+    <div class="traffic-card">
+        <p class="traffic-title">🚗 錦綉周邊即時交通路況快搜</p>
+        <p class="traffic-desc">
+            由錦綉出發去元朗、上水或市區，驚博愛迴旋處或者新田公路塞車？<br>
+            點擊下方按鈕，即時<b>自動喚醒手機 Google Maps App 並強制開啟紅綠色實時路況層</b>！
+        </p>
+        <!-- 採用特製參數：layer=t (Traffic) 強制開啟路況，並對準錦綉迴旋處座標 -->
+        <a href="https://www.google.com/maps/@22.477,114.053,14z/data=!5m1!1e1" target="_blank" class="traffic-btn">
+            🗺️ 一鍵睇 新田/博愛/元朗公路 塞唔塞車
+        </a>
+    </div>
+
+    <!-- ==================== 第一部分：出發 ➜ 離開錦綉 ==================== -->
     <div class="section-title">🚌 出發 ➜ 離開錦綉花園</div>
     <div class="grid-container">
         <div class="card"><h2 class="nr93-t">NR93：錦綉花園 ➜ 元朗安信街</h2><div class="route-sub" id="nr93_out-sub">--</div><div class="timer nr93-bg" id="nr93_out-countdown">載入中...</div><div class="next-bus" id="nr93_out-next">下一班：--:--</div></div>
@@ -55,6 +77,7 @@
         <div class="card"><h2 class="nr948-t">NR948：錦綉花園 ➜ 青衣機鐵站</h2><div class="route-sub" id="nr948_out-sub">--</div><div class="timer nr948-bg" id="nr948_out-countdown">載入中...</div><div class="next-bus" id="nr948_out-next">下一班：--:--</div></div>
     </div>
 
+    <!-- ==================== 第二部分：回程 ➜ 返錦綉 ==================== -->
     <div class="section-title">🏡 回程 ➜ 返回錦綉花園</div>
     <div class="grid-container">
         <div class="card"><h2 class="nr93-t">NR93：元朗安信街 ➜ 錦綉花園</h2><div class="route-sub" id="nr93_in-sub">--</div><div class="timer nr93-bg" id="nr93_in-countdown">載入中...</div><div class="next-bus" id="nr93_in-next">下一班：--:--</div><div class="notice">💡 班次由安信街開出，約 3-5 分鐘抵達 YOHO</div></div>
@@ -205,7 +228,6 @@
                         const mins = Math.floor(diff / 1000 / 60);
                         const secs = Math.floor((diff / 1000) % 60);
 
-                        // 💡 關鍵修正：如果下一班車要等大過 60 分鐘，代表現時根本唔係服務時段！
                         if (mins > 60) {
                             countdownEl.innerText = "非服務時段";
                             countdownEl.classList.add('status-off');
